@@ -13,15 +13,17 @@ module.exports = function angularStyleUrlsRewriter(context, callback) {
         if (node.properties) {
           node.properties.forEach(function(property) {
             if (property.name.text === "styleUrls") {
-              var start = property.initializer.getStart() + 1,
-                end = start + property.initializer.text.length,
+              var prop = property[0];
+
+              var start = prop.initializer.getStart() + 1,
+                end = start + prop.initializer.text.length,
                 stylesDir = path.dirname(context.filename),
                 relativeStylesDir = path.relative(context.basePath, stylesDir),
                 styleUrls = path.join(
                   context.urlRoot,
                   "base",
                   relativeStylesDir,
-                  property.initializer.text
+                  prop.initializer.text
                 );
 
               magic.overwrite(start, end, fixWindowsPath(stylesUrl));
