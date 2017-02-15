@@ -2,7 +2,7 @@ var MagicString = require("magic-string"),
   path = require("path"),
   ts = require("typescript");
 
-module.exports = function angularStyleUrlRewriter(context, callback) {
+module.exports = function angularStyleUrlsRewriter(context, callback) {
   var changed = false, magic = new MagicString(context.fullText);
 
   visitNode(context.sourceFile);
@@ -12,19 +12,19 @@ module.exports = function angularStyleUrlRewriter(context, callback) {
       case ts.SyntaxKind.ObjectLiteralExpression:
         if (node.properties) {
           node.properties.forEach(function(property) {
-            if (property.name.text === "styleUrl") {
+            if (property.name.text === "styleUrls") {
               var start = property.initializer.getStart() + 1,
                 end = start + property.initializer.text.length,
-                styleDir = path.dirname(context.filename),
-                relativeStyleDir = path.relative(context.basePath, styleDir),
-                styleUrl = path.join(
+                stylesDir = path.dirname(context.filename),
+                relativeStylesDir = path.relative(context.basePath, stylesDir),
+                styleUrls = path.join(
                   context.urlRoot,
                   "base",
-                  relativeStyleDir,
+                  relativeStylesDir,
                   property.initializer.text
                 );
 
-              magic.overwrite(start, end, fixWindowsPath(styleUrl));
+              magic.overwrite(start, end, fixWindowsPath(stylesUrl));
               context.fullText = magic.toString();
               changed = true;
             }
